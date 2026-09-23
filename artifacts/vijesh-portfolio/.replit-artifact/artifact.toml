@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Vijesh S Portfolio"
+description = "A recruiter-focused portfolio for Vijesh S, showcasing full-stack engineering, applied AI, Cloud and DevOps work through a polished animated experience."
+version = "1.0.0"
+id = "artifacts/vijesh-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22941
+
+[services.development]
+run = "pnpm --filter @workspace/vijesh-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/vijesh-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/vijesh-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22941"
+BASE_PATH = "/"

@@ -1,6 +1,6 @@
-# [Project name]
+# Vijesh S Portfolio
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A recruiter-focused personal portfolio for Vijesh S, showcasing full-stack engineering, applied AI, Cloud and DevOps work through a polished animated web experience.
 
 ## Run & Operate
 
@@ -22,23 +22,30 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/vijesh-portfolio/src/data/portfolio.ts` — source of truth for personal details, projects, skills, education, experience, open source, and achievements.
+- `artifacts/vijesh-portfolio/src/components/portfolio.tsx` — modular page sections and interactions.
+- `artifacts/vijesh-portfolio/src/index.css` — visual theme, typography, grid texture, motion, and responsive utilities.
+- `artifacts/vijesh-portfolio/index.html` — page metadata and SEO defaults.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The public site is a presentation-first React/Vite artifact with content centralized in a typed data module so updates do not require edits across components.
+- Project details open in an accessible modal to keep the recruiter path fast while retaining deeper architecture and contribution context.
+- Resume CTAs stay disabled until the configured path responds with an actual PDF content type.
+- Contact form validation is client-side in the first build; no visitor identity or analytics data is captured implicitly.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The site introduces Vijesh as a Software Engineer & Full-Stack Developer, lets recruiters filter and inspect projects, reviews skills and experience, links to GitHub/LinkedIn/LeetCode, and provides a validated contact form with success and error states.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The portfolio content must not invent metrics, algorithms, experience, awards, repository access, or technologies that were not provided.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Add `public/resume.pdf` or set `VITE_RESUME_PATH` before expecting the resume CTA to activate.
+- Keep contact details and project claims in `src/data/portfolio.ts`, not in individual sections.
 
 ## Pointers
 
