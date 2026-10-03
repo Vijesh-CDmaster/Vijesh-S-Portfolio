@@ -125,3 +125,52 @@
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
+
+/* Custom cursor is active only while CustomCursor mounts (desktop, no reduced motion) */
+.cursor-none-active,
+.cursor-none-active * { cursor: none !important; }
+.cursor-none-active input,
+.cursor-none-active textarea { cursor: text !important; }
+
+/* ============================================================================
+   DESIGN SYSTEM TOKENS — dark cinematic direction
+   Additive layer: nothing below changes current rendering. Components built
+   for the cinematic rebuild consume these instead of one-off hex values.
+   ============================================================================ */
+:root {
+  /* Surface hierarchy — multiple dark layers, never flat black */
+  --surface-base: #070a0e;        /* primary background */
+  --surface-sunken: #0b1016;      /* recessed wells, code blocks */
+  --surface-raised: #111823;      /* secondary surface, cards */
+  --surface-elevated: #18212e;    /* elevated surface, hover states */
+  --surface-glass: rgba(17, 24, 35, 0.72); /* glass surface (blur + alpha) */
+  --surface-border: rgba(233, 240, 255, 0.09); /* hairline borders */
+  --surface-border-strong: rgba(233, 240, 255, 0.18);
+
+  /* Accent — single restrained accent per the technical/minimal direction */
+  --accent-signal: #6ee7b7;
+  --accent-warm: #f4b64a;
+
+  /* Text ramp */
+  --text-strong: #eef2f7;
+  --text-default: #c3ccd9;
+  --text-muted: #8794a6;
+  --text-faint: #5c6779;
+
+  /* Typography scale — Display: Space Grotesk · Body: Manrope · Code: DM Mono */
+  --type-display: clamp(3rem, 8vw, 7.5rem);
+  --type-h1: clamp(2.25rem, 5vw, 4rem);
+  --type-h2: clamp(1.75rem, 3.5vw, 2.75rem);
+  --type-h3: clamp(1.25rem, 2vw, 1.6rem);
+  --type-body: 1.0625rem;
+  --type-small: 0.875rem;
+  --type-label: 0.6875rem;
+  --type-code: 0.8125rem;
+
+  /* Motion — mirrors src/motion/tokens.ts for CSS-driven effects */
+  --motion-fast: 200ms;
+  --motion-base: 350ms;
+  --motion-slow: 550ms;
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+}

@@ -32,6 +32,11 @@ export const portfolio = {
   github: 'https://github.com/Vijesh-CDmaster',
   leetcode: 'https://leetcode.com/u/VIjesh_07/',
   linkedin: 'https://www.linkedin.com/in/vijesh-s-b476a3340',
+  /** Drop your real photo at this path (public/images/vijesh-profile.png). */
+  profileImage: '/images/vijesh-profile.png',
+  /** GitHub username used for the public repositories API (no tokens). */
+  githubUser: 'Vijesh-CDmaster',
+  contactHeadline: "LET'S BUILD SOMETHING USEFUL.",
   stats: [
     { value: '2028', label: 'Expected graduation' },
     { value: '7.83', label: 'Current CGPA' },
@@ -49,6 +54,7 @@ export const portfolio = {
     role: 'Software / AI Intern',
     period: '09 June 2026 – 25 June 2026',
     project: 'Silent Dropout Prediction',
+    note: 'Patent dropout detection — not student dropout prediction.',
   },
   openSource: [
     { name: 'CNCF Automation', organization: 'CNCF ecosystem', role: 'Contributor', url: 'https://www.cncf.io/' },
@@ -133,7 +139,7 @@ export const portfolio = {
       categories: ['AI / ML'],
       summary: 'Internship project for identifying early signals of silent dropout.',
       detail:
-        'Silent Dropout Prediction was developed during an internship at Sangam Soft Solutions. This portfolio intentionally describes the project without inventing algorithms, accuracy values, datasets, or business results that have not been verified.',
+        'Silent Dropout Prediction was developed during an internship at Sangam Soft Solutions. The project is about patent dropout detection — not student dropout prediction. This portfolio intentionally describes the project without inventing algorithms, accuracy values, datasets, or business results that have not been verified.',
       status: 'Private Repository',
       tags: ['Internship', 'Data science', 'Prediction'],
       accent: 'gold',
@@ -157,9 +163,12 @@ export const portfolio = {
 };
 
 export const navItems = [
+  { label: 'Home', href: '#top' },
   { label: 'About', href: '#about' },
   { label: 'Projects', href: '#projects' },
+  { label: 'Experience', href: '#experience' },
   { label: 'Skills', href: '#skills' },
-  { label: 'Journey', href: '#journey' },
+  { label: 'Open Source', href: '#open-source' },
+  { label: 'Achievements', href: '#achievements' },
   { label: 'Contact', href: '#contact' },
 ];

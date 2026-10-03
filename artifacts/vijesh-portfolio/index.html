@@ -14,7 +14,8 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Vijesh S | Software Engineer &amp; Full-Stack Developer" />
     <meta name="twitter:description" content="Portfolio of Vijesh S — Software Engineer and Full-Stack Developer focused on AI, Cloud, DevOps, and building real-world software systems." />
-    <link rel="canonical" href="/" />
+    <!-- vite-ignore: keep the site-relative canonical; Vite must not try to bundle it -->
+    <link rel="canonical" href="/" vite-ignore />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +23,33 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Vijesh S",
+        "jobTitle": "Software Engineer & Full-Stack Developer",
+        "description": "Software Engineer & Full-Stack Developer building AI-powered, cloud-ready and real-world software systems.",
+        "url": "/",
+        "sameAs": [
+          "https://github.com/Vijesh-CDmaster",
+          "https://www.linkedin.com/in/vijesh-s-b476a3340",
+          "https://leetcode.com/u/VIjesh_07/"
+        ],
+        "knowsAbout": [
+          "Full-Stack Development",
+          "React",
+          "TypeScript",
+          "Node.js",
+          "Python",
+          "Machine Learning",
+          "AWS",
+          "Docker",
+          "Terraform",
+          "CI/CD"
+        ]
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
