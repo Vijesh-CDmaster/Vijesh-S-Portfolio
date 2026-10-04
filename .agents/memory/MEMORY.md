@@ -1,1 +1,0 @@
-- [Resume availability check](portfolio-resume-check.md) — verify optional PDF assets by MIME type, not status alone, because Vite fallbacks can return HTML for missing files.
