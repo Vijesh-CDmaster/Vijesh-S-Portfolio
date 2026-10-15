@@ -2,6 +2,7 @@ import { motion, type Variants } from 'framer-motion';
 
 import { easings } from '@/motion/tokens';
 import { scrollToId } from '@/lib/scroll';
+import { resumePath } from '@/lib/site';
 import { portfolio } from '@/data/portfolio';
 import { MagneticButton } from '@/components/animations/MagneticButton';
 import ProfileFrame from '@/components/ProfileFrame';
@@ -78,7 +79,7 @@ export default function HeroSection({ resumeAvailable }: Props) {
 
               {resumeAvailable && (
                 <MagneticButton
-                  onClick={() => window.open('/resume.pdf', '_blank', 'noopener')}
+                  onClick={() => window.open(resumePath, '_blank', 'noopener')}
                   className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-4 text-sm font-bold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   data-testid="button-hero-resume"
                 >

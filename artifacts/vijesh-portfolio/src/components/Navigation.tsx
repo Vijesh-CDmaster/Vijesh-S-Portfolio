@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { durations, easings } from '@/motion/tokens';
 import { navItems } from '@/data/portfolio';
+import { resumePath } from '@/lib/site';
 
 type Props = { resumeAvailable: boolean };
 
@@ -97,7 +98,7 @@ export default function Navigation({ resumeAvailable }: Props) {
           <div className="flex items-center gap-2">
             {resumeAvailable && (
               <motion.a
-                href="/resume.pdf"
+                href={resumePath}
                 target="_blank"
                 rel="noreferrer"
                 className="hidden items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-secondary-foreground transition-colors hover:bg-secondary/90 sm:flex"
@@ -177,7 +178,7 @@ export default function Navigation({ resumeAvailable }: Props) {
                     transition={{ delay: 0.05 * navItems.length, duration: durations.base }}
                   >
                     <a
-                      href="/resume.pdf"
+                      href={resumePath}
                       target="_blank"
                       rel="noreferrer"
                       onClick={close}

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { durations, easings } from '@/motion/tokens';
 import { portfolio } from '@/data/portfolio';
@@ -7,15 +7,27 @@ import { SectionReveal, StaggerContainer, StaggerItem } from '@/components/anima
 
 type Skill = { name: string; category: string; x: number; y: number };
 type Category = { label: string; x: number; y: number; hue: string };
+type Point = { x: number; y: number };
+type LaidOut = { skills: Map<string, Point>; hubs: Map<string, Point> };
 
 /**
  * Act 3 — technical constellation. Skills are stars grouped around category
  * hubs; hovering a star lifts it, glows it, draws a line to its hub and shows
  * its category. No percentage bars — just relationships.
+ *
+ * Positions are seeded by the polar formula below, then resolved on mount and
+ * resize by a small collision-relaxation solver: every chip is measured, hubs
+ * stay pinned, and overlapping chips are pushed apart until each pair keeps a
+ * real gap. This prevents chips from stacking on each other or on their hub.
  */
 export default function SkillsSection() {
   const reduced = useReducedMotion();
   const [active, setActive] = useState<Skill | null>(null);
+  const [layout, setLayout] = useState<LaidOut | null>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const skillEls = useRef(new Map<string, HTMLButtonElement>());
+  const hubEls = useRef(new Map<string, HTMLSpanElement>());
 
   const categories: Category[] = useMemo(
     () =>
@@ -46,8 +58,154 @@ export default function SkillsSection() {
     return result;
   }, [categories]);
 
+  /**
+   * Measure every chip and relax the seeded positions until nothing overlaps.
+   * Hubs are pinned; skills are pushed out of collisions and spring back
+   * toward their seeded position. Runs before paint (useLayoutEffect) so the
+   * overlap-free layout is what first renders.
+   */
+  const solve = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    if (!width || !height) {
+      setLayout(null); // constellation is hidden (mobile) — nothing to solve
+      return;
+    }
+
+    type Box = {
+      id: string;
+      hub: boolean;
+      cx: number;
+      cy: number;
+      w: number;
+      h: number;
+      hx: number;
+      hy: number;
+    };
+
+    const boxes: Box[] = [];
+
+    categories.forEach((category) => {
+      const el = hubEls.current.get(category.label);
+      if (!el) return;
+      const cx = (category.x / 100) * width;
+      const cy = (category.y / 100) * height;
+      boxes.push({ id: category.label, hub: true, cx, cy, w: el.offsetWidth, h: el.offsetHeight, hx: cx, hy: cy });
+    });
+
+    skills.forEach((skill) => {
+      const el = skillEls.current.get(skill.name);
+      if (!el) return;
+      const hx = (skill.x / 100) * width;
+      const hy = (skill.y / 100) * height;
+      boxes.push({ id: skill.name, hub: false, cx: hx, cy: hy, w: el.offsetWidth, h: el.offsetHeight, hx, hy });
+    });
+
+    const PAD = 12; // required clear gap between chip boxes
+    const MARGIN = 8; // inset from the field borders
+
+    const overlaps = () => {
+      let collisions = 0;
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i];
+          const b = boxes[j];
+          const overlapX = (a.w + b.w) / 2 + PAD - Math.abs(b.cx - a.cx);
+          const overlapY = (a.h + b.h) / 2 + PAD - Math.abs(b.cy - a.cy);
+          if (overlapX > 0 && overlapY > 0) collisions += 1;
+        }
+      }
+      return collisions;
+    };
+
+    const clamp = (box: Box) => {
+      box.cx = Math.min(width - box.w / 2 - MARGIN, Math.max(box.w / 2 + MARGIN, box.cx));
+      box.cy = Math.min(height - box.h / 2 - MARGIN, Math.max(box.h / 2 + MARGIN, box.cy));
+    };
+
+    for (let iter = 0; iter < 300; iter += 1) {
+      // 1. Spring skills back toward their seeded constellation position.
+      for (const box of boxes) {
+        if (box.hub) continue;
+        box.cx += (box.hx - box.cx) * 0.05;
+        box.cy += (box.hy - box.cy) * 0.05;
+        clamp(box);
+      }
+
+      // 2. Push overlapping pairs apart along the axis of least penetration.
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i];
+          const b = boxes[j];
+          const dx = b.cx - a.cx;
+          const dy = b.cy - a.cy;
+          const overlapX = (a.w + b.w) / 2 + PAD - Math.abs(dx);
+          const overlapY = (a.h + b.h) / 2 + PAD - Math.abs(dy);
+          if (overlapX <= 0 || overlapY <= 0) continue;
+
+          if (overlapX < overlapY) {
+            const sign = dx !== 0 ? Math.sign(dx) : i % 2 === 0 ? 1 : -1;
+            const push = sign * overlapX;
+            if (a.hub && b.hub) continue;
+            if (a.hub) b.cx += push;
+            else if (b.hub) a.cx -= push;
+            else {
+              a.cx -= push / 2;
+              b.cx += push / 2;
+            }
+          } else {
+            const sign = dy !== 0 ? Math.sign(dy) : i % 2 === 0 ? 1 : -1;
+            const push = sign * overlapY;
+            if (a.hub && b.hub) continue;
+            if (a.hub) b.cy += push;
+            else if (b.hub) a.cy -= push;
+            else {
+              a.cy -= push / 2;
+              b.cy += push / 2;
+            }
+          }
+        }
+      }
+
+      // 3. Keep everything inside the field, then check for a clean state.
+      boxes.forEach(clamp);
+      if (iter > 5 && overlaps() === 0) break;
+    }
+
+    const next: LaidOut = { skills: new Map(), hubs: new Map() };
+    for (const box of boxes) {
+      const point = { x: box.cx, y: box.cy };
+      if (box.hub) next.hubs.set(box.id, point);
+      else next.skills.set(box.id, point);
+    }
+    setLayout(next);
+  }, [categories, skills]);
+
+  useLayoutEffect(() => {
+    solve();
+  }, [solve]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const observer = new ResizeObserver(() => solve());
+    observer.observe(container);
+    // Web fonts change chip widths — resolve again once they are ready.
+    let alive = true;
+    document.fonts?.ready.then(() => {
+      if (alive) solve();
+    });
+    return () => {
+      alive = false;
+      observer.disconnect();
+    };
+  }, [solve]);
+
   const activeHub = active ? categories.find((category) => category.label === active.category) : null;
-  const activeSkill = skills.find((skill) => skill.name === active?.name);
+  const activeHubPoint = activeHub && layout ? layout.hubs.get(activeHub.label) : null;
+  const activeSkillPoint = active && layout ? layout.skills.get(active.name) : null;
 
   return (
     <section id="skills" className="border-t border-foreground/10 py-24 md:py-32" data-testid="section-skills">
@@ -69,6 +227,7 @@ export default function SkillsSection() {
         {/* Constellation field (pointer devices) */}
         <SectionReveal className="mt-12" from="fade">
           <div
+            ref={containerRef}
             className="relative hidden h-[440px] overflow-hidden rounded-[1.75rem] border border-foreground/10 bg-surface-sunken/70 md:block"
             onPointerLeave={() => setActive(null)}
             data-testid="viz-constellation"
@@ -77,13 +236,13 @@ export default function SkillsSection() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(110,231,183,0.06),transparent_70%)]" />
 
             {/* Connector from active skill to its hub */}
-            {active && activeHub && activeSkill && (
+            {active && activeHubPoint && activeSkillPoint && (
               <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
                 <motion.line
-                  x1={`${activeHub.x}%`}
-                  y1={`${activeHub.y}%`}
-                  x2={`${activeSkill.x}%`}
-                  y2={`${activeSkill.y}%`}
+                  x1={activeHubPoint.x}
+                  y1={activeHubPoint.y}
+                  x2={activeSkillPoint.x}
+                  y2={activeSkillPoint.y}
                   stroke="rgba(110,231,183,0.75)"
                   strokeWidth="1.2"
                   strokeDasharray="3 5"
@@ -95,35 +254,47 @@ export default function SkillsSection() {
             )}
 
             {/* Category hubs */}
-            {categories.map((category) => (
-              <div key={category.label}>
-                <span
-                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] backdrop-blur-sm"
-                  style={{
-                    left: `${category.x}%`,
-                    top: `${category.y}%`,
-                    borderColor: active?.category === category.label ? category.hue : 'rgba(255,255,255,0.18)',
-                    color: active?.category === category.label ? category.hue : 'rgba(255,255,255,0.55)',
-                    backgroundColor: active?.category === category.label ? 'rgba(110,231,183,0.08)' : 'rgba(10,14,20,0.7)',
-                  }}
-                >
-                  {category.label}
-                </span>
-              </div>
-            ))}
+            {categories.map((category) => {
+              const point = layout?.hubs.get(category.label);
+              return (
+                <div key={category.label}>
+                  <span
+                    ref={(el) => {
+                      if (el) hubEls.current.set(category.label, el);
+                      else hubEls.current.delete(category.label);
+                    }}
+                    className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] backdrop-blur-sm"
+                    style={{
+                      left: point ? `${point.x}px` : `${category.x}%`,
+                      top: point ? `${point.y}px` : `${category.y}%`,
+                      borderColor: active?.category === category.label ? category.hue : 'rgba(255,255,255,0.18)',
+                      color: active?.category === category.label ? category.hue : 'rgba(255,255,255,0.55)',
+                      backgroundColor: active?.category === category.label ? 'rgba(110,231,183,0.08)' : 'rgba(10,14,20,0.7)',
+                    }}
+                  >
+                    {category.label}
+                  </span>
+                </div>
+              );
+            })}
 
             {/* Skill stars */}
             {skills.map((skill) => {
+              const point = layout?.skills.get(skill.name);
               const isActive = active?.name === skill.name;
               const dimmed = active && !isActive && active.category !== skill.category;
               return (
                 <motion.button
                   key={skill.name}
+                  ref={(el) => {
+                    if (el) skillEls.current.set(skill.name, el);
+                    else skillEls.current.delete(skill.name);
+                  }}
                   type="button"
                   className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-2.5 py-1 font-mono text-[10px] backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   style={{
-                    left: `${skill.x}%`,
-                    top: `${skill.y}%`,
+                    left: point ? `${point.x}px` : `${skill.x}%`,
+                    top: point ? `${point.y}px` : `${skill.y}%`,
                     borderColor: isActive ? 'rgba(110,231,183,0.8)' : 'rgba(255,255,255,0.14)',
                     backgroundColor: isActive ? 'rgba(110,231,183,0.14)' : 'rgba(10,14,20,0.72)',
                     color: isActive ? '#6ee7b7' : 'rgba(220,228,238,0.72)',

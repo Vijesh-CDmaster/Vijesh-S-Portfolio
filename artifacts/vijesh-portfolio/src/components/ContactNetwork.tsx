@@ -81,7 +81,9 @@ export default function ContactNetwork({ sent }: Props) {
           const dy = points[i].y - points[j].y;
           const distance = Math.hypot(dx, dy);
           if (distance < 130) {
-            context.strokeStyle = `rgba(110, 231, 183, ${0.16 * (1 - distance / 130)})`;
+            // Dark teal strings: the original mint green was invisible on the
+            // light panel, so the mesh lines use a deep ink teal instead.
+            context.strokeStyle = `rgba(16, 94, 84, ${0.5 * (1 - distance / 130)})`;
             context.lineWidth = 1;
             context.beginPath();
             context.moveTo(points[i].x, points[i].y);
@@ -96,7 +98,9 @@ export default function ContactNetwork({ sent }: Props) {
         points.forEach((point) => {
           const distance = Math.hypot(point.x - mouse.x, point.y - mouse.y);
           if (distance < 160) {
-            context.strokeStyle = `rgba(244, 182, 74, ${0.28 * (1 - distance / 160)})`;
+            // Dark amber strings so cursor lines read clearly on light bg.
+            context.strokeStyle = `rgba(154, 90, 8, ${0.65 * (1 - distance / 160)})`;
+            context.lineWidth = 1.15;
             context.beginPath();
             context.moveTo(point.x, point.y);
             context.lineTo(mouse.x, mouse.y);
@@ -171,7 +175,7 @@ export default function ContactNetwork({ sent }: Props) {
     >
       <div className="technical-grid absolute inset-0 opacity-40" />
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />
-      <div className="absolute bottom-4 left-4 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+      <div className="absolute bottom-4 left-4 font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/85">
         communication mesh / cursor-reactive
       </div>
       {sent && (

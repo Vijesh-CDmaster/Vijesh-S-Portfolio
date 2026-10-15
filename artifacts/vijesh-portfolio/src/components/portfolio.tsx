@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { portfolio, navItems, type Project, type ProjectCategory } from '@/data/portfolio';
+import { resumePath } from '@/lib/site';
 
 type RevealProps = { children: ReactNode; className?: string };
 
@@ -93,7 +94,7 @@ export function Header({ resumeAvailable }: { resumeAvailable: boolean }) {
           </nav>
           <div className="flex items-center gap-2">
             {resumeAvailable ? (
-              <a href="/resume.pdf" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-secondary-foreground transition-transform hover:-translate-y-0.5 sm:flex" data-testid="link-resume-header">
+              <a href={resumePath} target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-secondary-foreground transition-transform hover:-translate-y-0.5 sm:flex" data-testid="link-resume-header">
                 Resume <ArrowUpRight className="size-3.5" />
               </a>
             ) : (
@@ -111,7 +112,7 @@ export function Header({ resumeAvailable }: { resumeAvailable: boolean }) {
                 {item.label} <ChevronRight className="size-4 text-primary" />
               </a>
             ))}
-            {resumeAvailable && <a href="/resume.pdf" onClick={close} className="mt-1 flex items-center justify-between rounded-2xl bg-secondary px-4 py-3 text-sm font-bold" data-testid="link-resume-mobile">Download resume <FileText className="size-4" /></a>}
+            {resumeAvailable && <a href={resumePath} onClick={close} className="mt-1 flex items-center justify-between rounded-2xl bg-secondary px-4 py-3 text-sm font-bold" data-testid="link-resume-mobile">Download resume <FileText className="size-4" /></a>}
           </div>
         )}
       </div>
@@ -142,7 +143,7 @@ export function Hero({ resumeAvailable }: { resumeAvailable: boolean }) {
               <a href="#contact" className="inline-flex items-center gap-2 rounded-full border border-foreground/15 px-5 py-3.5 text-sm font-bold transition-colors hover:border-primary hover:text-primary" data-testid="link-hero-contact">
                 Start a conversation <ArrowUpRight className="size-4" />
               </a>
-              {resumeAvailable && <a href="/resume.pdf" target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground underline decoration-foreground/20 underline-offset-4 hover:text-primary" data-testid="link-resume-hero">View resume</a>}
+              {resumeAvailable && <a href={resumePath} target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground underline decoration-foreground/20 underline-offset-4 hover:text-primary" data-testid="link-resume-hero">View resume</a>}
             </div>
           </div>
           <div className="reveal reveal-delay-3 relative lg:pb-4">
@@ -401,7 +402,7 @@ export function Footer({ resumeAvailable }: { resumeAvailable: boolean }) {
       <div className="section-shell flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <p className="font-display text-lg font-semibold tracking-[-0.04em]">Vijesh S<span className="text-primary">.</span></p>
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Built with curiosity · {portfolio.location}</p>
-        <div className="flex items-center gap-4 text-xs font-semibold"><a href="#top" className="transition-colors hover:text-primary" data-testid="link-back-top">Back to top ↑</a>{resumeAvailable && <a href="/resume.pdf" target="_blank" rel="noreferrer" className="transition-colors hover:text-primary" data-testid="link-resume-footer">Resume</a>}</div>
+        <div className="flex items-center gap-4 text-xs font-semibold"><a href="#top" className="transition-colors hover:text-primary" data-testid="link-back-top">Back to top ↑</a>{resumeAvailable && <a href={resumePath} target="_blank" rel="noreferrer" className="transition-colors hover:text-primary" data-testid="link-resume-footer">Resume</a>}</div>
       </div>
     </footer>
   );

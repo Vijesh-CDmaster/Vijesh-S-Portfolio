@@ -1,0 +1,6 @@
+[build]
+  command = "pnpm --filter @workspace/vijesh-portfolio build"
+  publish = "artifacts/vijesh-portfolio/dist/public"
+
+[build.environment]
+  BASE_PATH = "/"

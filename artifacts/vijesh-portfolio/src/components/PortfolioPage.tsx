@@ -16,12 +16,11 @@ import ContactSection from '@/components/sections/ContactSection';
 import FooterSection from '@/components/sections/FooterSection';
 import NotFound from '@/pages/not-found';
 import { scrollToId } from '@/lib/scroll';
+import { resumePath } from '@/lib/site';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 const queryClient = new QueryClient();
-const RESUME_PATH = import.meta.env.VITE_RESUME_PATH || '/resume.pdf';
-
 const PortfolioPageContent: React.FC = () => {
   const [resumeAvailable, setResumeAvailable] = useState(false);
 
@@ -43,7 +42,7 @@ const PortfolioPageContent: React.FC = () => {
 
   useEffect(() => {
     let active = true;
-    fetch(RESUME_PATH, { method: 'HEAD' })
+    fetch(resumePath, { method: 'HEAD' })
       .then((response) => {
         const contentType = response.headers.get('content-type') ?? '';
         if (active) setResumeAvailable(response.ok && contentType.includes('application/pdf'));

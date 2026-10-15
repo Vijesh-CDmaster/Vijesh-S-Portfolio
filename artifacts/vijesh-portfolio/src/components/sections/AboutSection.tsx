@@ -6,7 +6,7 @@ import { portfolio } from '@/data/portfolio';
 import { SectionReveal, StaggerContainer, StaggerItem } from '@/components/animations';
 
 const nodes = [
-  { id: 'fullstack', label: 'FULL-STACK', x: '12%', y: '16%', description: 'React, Node, APIs, databases — end-to-end product delivery.' },
+  { id: 'fullstack', label: 'FULL-STACK', x: '15%', y: '16%', description: 'React, Node, APIs, databases — end-to-end product delivery.' },
   { id: 'ai', label: 'AI', x: '70%', y: '10%', description: 'Machine learning, computer vision, AI APIs, applied intelligence.' },
   { id: 'cloud', label: 'CLOUD', x: '18%', y: '66%', description: 'AWS, deployment workflows, cloud-ready architecture.' },
   { id: 'devops', label: 'DEVOPS', x: '66%', y: '58%', description: 'Docker, Terraform, GitHub Actions, Linux, CI/CD.' },
@@ -109,7 +109,7 @@ export default function AboutSection() {
                   <motion.button
                     key={node.id}
                     type="button"
-                    className="absolute rounded-full border border-foreground/15 bg-background/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-foreground/15 bg-background/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                     style={{ left: node.x, top: node.y }}
                     onPointerEnter={() => setActive(node.id)}
                     onFocus={() => setActive(node.id)}

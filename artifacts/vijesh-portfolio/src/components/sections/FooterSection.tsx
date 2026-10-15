@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 
 import { portfolio } from '@/data/portfolio';
+import { resumePath } from '@/lib/site';
 
 type Props = { resumeAvailable: boolean };
 
@@ -43,7 +44,7 @@ export default function FooterSection({ resumeAvailable }: Props) {
           ))}
           {resumeAvailable && (
             <a
-              href="/resume.pdf"
+              href={resumePath}
               target="_blank"
               rel="noreferrer"
               className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-primary"

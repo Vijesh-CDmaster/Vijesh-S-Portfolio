@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 
 import { durations, easings } from '@/motion/tokens';
 import { portfolio } from '@/data/portfolio';
+import { resumePath } from '@/lib/site';
 import { SectionReveal } from '@/components/animations';
 import ContactNetwork from '@/components/ContactNetwork';
 import { MagneticButton } from '@/components/animations/MagneticButton';
@@ -31,17 +32,23 @@ export default function ContactSection({ resumeAvailable }: Props) {
     setState((current) => (current === 'idle' || current === 'typing' ? 'typing' : current));
   };
 
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (!form.name.trim() || !form.email.includes('@') || form.message.trim().length < 12) {
+    if (!form.name.trim() || !isValidEmail || form.message.trim().length < 12) {
       setState('validation');
       setError('Please add your name, a valid email, and a little more context (12 characters minimum).');
       return;
     }
     setError('');
     setState('submitting');
-    // Client-side only — no backend in this build; simulate the handoff.
-    window.setTimeout(() => setState('success'), 900);
+    const subject = encodeURIComponent(`Portfolio enquiry from ${form.name.trim()}`);
+    const body = encodeURIComponent(
+      `Name: ${form.name.trim()}\nEmail: ${form.email.trim()}\n\n${form.message.trim()}`,
+    );
+    window.location.assign(`mailto:${portfolio.email}?subject=${subject}&body=${body}`);
+    setState('success');
   };
 
   const reset = () => {
@@ -95,7 +102,7 @@ export default function ContactSection({ resumeAvailable }: Props) {
 
             {resumeAvailable && (
               <motion.a
-                href="/resume.pdf"
+                href={resumePath}
                 target="_blank"
                 rel="noreferrer"
                 whileHover={{ x: 8 }}
@@ -123,7 +130,7 @@ export default function ContactSection({ resumeAvailable }: Props) {
                   >
                     <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">Message received.</p>
                     <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
-                      Thanks for reaching out — I&apos;ll get back to you soon.
+                      Your email app is ready with the message. Send it there and I&apos;ll get back to you soon.
                     </p>
                     <button
                       onClick={reset}
@@ -150,6 +157,9 @@ export default function ContactSection({ resumeAvailable }: Props) {
                         <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Name</span>
                         <motion.input
                           value={form.name}
+                          id="contact-name"
+                          name="name"
+                          autoComplete="name"
                           onChange={(event) => updateField('name', event.target.value)}
                           className={`${fieldClass} ${
                             state === 'validation' && !form.name.trim() ? 'border-red-400' : 'border-foreground/15 focus:border-primary'
@@ -164,9 +174,12 @@ export default function ContactSection({ resumeAvailable }: Props) {
                         <motion.input
                           type="email"
                           value={form.email}
+                          id="contact-email"
+                          name="email"
+                          autoComplete="email"
                           onChange={(event) => updateField('email', event.target.value)}
                           className={`${fieldClass} ${
-                            state === 'validation' && !form.email.includes('@') ? 'border-red-400' : 'border-foreground/15 focus:border-primary'
+                            state === 'validation' && !isValidEmail ? 'border-red-400' : 'border-foreground/15 focus:border-primary'
                           }`}
                           placeholder="you@company.com"
                           whileFocus={reduced ? undefined : { scale: 1.01 }}
@@ -180,6 +193,8 @@ export default function ContactSection({ resumeAvailable }: Props) {
                       <motion.textarea
                         rows={5}
                         value={form.message}
+                        id="contact-message"
+                        name="message"
                         onChange={(event) => updateField('message', event.target.value)}
                         className={`${fieldClass} resize-none leading-7 ${
                           state === 'validation' && form.message.trim().length < 12 ? 'border-red-400' : 'border-foreground/15 focus:border-primary'

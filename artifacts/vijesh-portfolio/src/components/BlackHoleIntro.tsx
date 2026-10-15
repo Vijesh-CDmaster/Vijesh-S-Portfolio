@@ -1,182 +1,242 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { gsap } from 'gsap';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 import { durations, easings } from '@/motion/tokens';
-import BlackHoleScene from '@/components/three/BlackHoleScene';
+import { navItems, portfolio } from '@/data/portfolio';
+import { MagneticButton } from '@/components/animations/MagneticButton';
 
-type Phase = 'intro' | 'warp' | 'welcome';
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
+};
 
-const welcomeLines = [
-  { text: 'WELCOME', className: 'font-mono text-xs uppercase tracking-[0.5em] text-secondary', delay: 0.1 },
-  { text: 'VIJESH S', className: 'font-display text-6xl font-semibold tracking-[-0.06em] md:text-8xl', delay: 0.45 },
-  { text: 'SOFTWARE ENGINEER & FULL-STACK DEVELOPER', className: 'font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/80 md:text-sm', delay: 0.9 },
-  { text: 'CLOUD & DEVOPS | SOLVING REAL PROBLEMS', className: 'font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground md:text-xs', delay: 1.25 },
+const item: Variants = {
+  hidden: { opacity: 0, y: 26, filter: 'blur(6px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: easings.out } },
+};
+
+const socials = [
+  { label: 'GitHub', href: portfolio.github },
+  { label: 'LinkedIn', href: portfolio.linkedin },
+  { label: 'LeetCode', href: portfolio.leetcode },
 ];
 
+const chapters = navItems.filter((nav) => nav.href !== '#top');
+
 /**
- * Act 1 — the entry portal: star field, black hole, cursor gravity, then a
- * cinematic dive through the singularity into the WELCOME sequence.
+ * The welcome page — the site's opening screen, styled like the landing page
+ * of a professional portfolio: brand header, "Welcome to my portfolio"
+ * headline, short introduction, primary CTA, social links, an at-a-glance
+ * stats card, and a section index previewing what's inside. Enter (or the
+ * Continue button) opens the portfolio itself.
  */
 export default function BlackHoleIntro({ onEnter }: { onEnter: () => void }) {
   const reduced = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>('intro');
-  const warpRef = useRef(0);
-  const boostRef = useRef(1);
-  const uiRef = useRef<HTMLDivElement>(null);
-  const blackoutRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
+  // Enter anywhere on the welcome screen opens the portfolio.
   useEffect(() => {
-    if (!reduced) return;
-    // Reduced motion: keep content, skip the cinematic dive choreography.
-    warpRef.current = 0.25;
-    boostRef.current = 1;
-  }, [reduced]);
-
-  useEffect(() => {
-    return () => {
-      timelineRef.current?.kill();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') onEnter();
     };
-  }, []);
-
-  const beginWarp = useCallback(() => {
-    if (phase !== 'intro') return;
-
-    if (reduced) {
-      setPhase('welcome');
-      return;
-    }
-
-    setPhase('warp');
-    const tl = gsap.timeline({ onComplete: () => setPhase('welcome') });
-    timelineRef.current = tl;
-
-    tl.to(warpRef, { current: 1, duration: 1.7, ease: 'power3.in' }, 0)
-      .to(boostRef, { current: 3.5, duration: 1.4, ease: 'power2.in' }, 0)
-      .to(uiRef.current, { scale: 5, opacity: 0, duration: 1.25, ease: 'power3.in' }, 0.1)
-      .to(blackoutRef.current, { opacity: 1, duration: 0.55, ease: 'power2.in' }, 1.15);
-  }, [phase, reduced]);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onEnter]);
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] overflow-hidden bg-black"
+      className="fixed inset-0 z-[100] overflow-y-auto grain"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: durations.slow, ease: easings.standard }}
-      aria-label="Entry experience"
+      aria-label="Welcome page"
     >
-      <BlackHoleScene warpRef={warpRef} boostRef={boostRef} />
+      {/* Background layers identical to the portfolio hero. */}
+      <div className="technical-grid absolute inset-x-0 top-0 -z-10 h-[680px] opacity-70 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+      <div className="absolute inset-x-0 top-0 -z-10 h-[680px] bg-[radial-gradient(ellipse_at_top,rgba(110,231,183,0.10),transparent_60%)]" />
 
-      {/* Vignette keeps type legible over the scene */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
-      <div ref={blackoutRef} className="pointer-events-none absolute inset-0 bg-black opacity-0" />
+      <div className="relative flex min-h-full flex-col">
+        {/* Brand header */}
+        <motion.header
+          className="section-shell flex items-center justify-between gap-4 pt-6"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: durations.base, ease: easings.out }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="grid size-8 place-items-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
+              V
+            </span>
+            <span className="font-display text-sm font-semibold tracking-tight text-foreground">
+              Vijesh S<span className="text-primary">.</span>
+            </span>
+          </div>
+          <span className="hidden items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary sm:inline-flex">
+            <span aria-hidden="true" className="status-dot size-1.5 rounded-full bg-primary" />
+            Available for thoughtful work
+          </span>
+        </motion.header>
 
-      <AnimatePresence mode="wait">
-        {phase !== 'welcome' ? (
-          <motion.div
-            key="intro-ui"
-            ref={uiRef}
-            className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.9, delay: 0.2, ease: easings.out } }}
-            exit={{ opacity: 0, transition: { duration: 0.2 } }}
-          >
-            <motion.p
-              className="font-mono text-[10px] uppercase tracking-[0.45em] text-secondary md:text-xs"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.7, ease: easings.out }}
-            >
-              Software Engineer
-            </motion.p>
-            <motion.h1
-              className="mt-5 font-display text-[clamp(3rem,12vw,9rem)] font-semibold leading-[0.9] tracking-[-0.06em] text-white"
-              initial={{ opacity: 0, y: 34, letterSpacing: '0.08em' }}
-              animate={{ opacity: 1, y: 0, letterSpacing: '-0.06em' }}
-              transition={{ delay: 0.55, duration: 1, ease: easings.out }}
-            >
-              VIJESH S
-            </motion.h1>
-            <motion.p
-              className="mt-6 font-mono text-[11px] uppercase tracking-[0.35em] text-white/70 md:text-sm"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.7, ease: easings.out }}
-            >
-              Full-Stack <span className="text-secondary">•</span> AI <span className="text-secondary">•</span> Cloud{' '}
-              <span className="text-secondary">•</span> DevOps
-            </motion.p>
-            <motion.button
-              type="button"
-              onClick={beginWarp}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.7, ease: easings.out }}
-              whileHover={reduced ? undefined : { scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="group relative mt-12 overflow-hidden rounded-full border border-secondary/50 bg-secondary/10 px-9 py-4 font-mono text-xs uppercase tracking-[0.3em] text-secondary backdrop-blur-sm transition-colors hover:bg-secondary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
-              data-testid="button-enter-portfolio"
-            >
-              <span className="relative z-10">Enter Portfolio</span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-secondary/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-            </motion.button>
-            <motion.p
-              className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-white/35"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5, duration: 0.8 }}
-            >
-              cursor bends the field
-            </motion.p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="welcome"
-            className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: durations.base, ease: easings.standard } }}
-          >
-            <div className="flex flex-col items-center gap-6 md:gap-8">
-              {welcomeLines.map((line) => (
-                <motion.p
-                  key={line.text}
-                  className={`${line.className} text-balance`}
-                  initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ delay: reduced ? line.delay * 0.4 : line.delay, duration: 0.8, ease: easings.out }}
+        {/* Main welcome composition */}
+        <main className="section-shell flex flex-1 items-center py-12 md:py-16">
+          <div className="grid w-full items-center gap-12 lg:grid-cols-[1.12fr_.88fr] lg:gap-16">
+            <motion.div variants={container} initial="hidden" animate="visible">
+              <motion.p
+                variants={item}
+                className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary"
+              >
+                <span aria-hidden="true" className="status-dot size-1.5 rounded-full bg-primary" />
+                Welcome
+              </motion.p>
+
+              <motion.h1
+                variants={item}
+                className="mt-7 font-display text-[clamp(2.6rem,7vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-foreground text-balance"
+              >
+                Welcome to my{' '}
+                <span className="text-primary">portfolio.</span>
+              </motion.h1>
+
+              <motion.p
+                variants={item}
+                className="mt-5 font-display text-[clamp(1.25rem,2.6vw,2rem)] font-semibold leading-tight tracking-[-0.03em] text-foreground/85"
+              >
+                I&apos;m {portfolio.name} — Software Engineer{' '}
+                <span className="text-primary">&amp;</span> Full-Stack Developer
+              </motion.p>
+
+              <motion.p
+                variants={item}
+                className="mt-4 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              >
+                Cloud &amp; DevOps <span className="text-secondary">|</span> Applied AI{' '}
+                <span className="text-secondary">|</span> Solving Real Problems
+              </motion.p>
+
+              <motion.p variants={item} className="mt-6 max-w-xl text-base leading-7 text-muted-foreground md:text-lg md:leading-8">
+                {portfolio.intro} Take a look around — the work, the story behind it, and
+                where we might build together.
+              </motion.p>
+
+              <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-4">
+                <MagneticButton
+                  onClick={onEnter}
+                  className="inline-flex items-center gap-3 rounded-full bg-primary px-6 py-4 text-sm font-bold text-primary-foreground shadow-[0_16px_40px_rgba(110,231,183,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  data-testid="button-continue-portfolio"
                 >
-                  {line.text}
-                </motion.p>
-              ))}
-            </div>
-            <motion.button
-              type="button"
-              onClick={onEnter}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: reduced ? 0.8 : 1.7, duration: 0.6 }}
-              whileHover={reduced ? undefined : { scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-14 rounded-full border border-foreground/25 px-7 py-3 font-mono text-[11px] uppercase tracking-[0.32em] text-foreground/85 transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              data-testid="button-continue-portfolio"
+                  Enter Portfolio <span aria-hidden="true">→</span>
+                </MagneticButton>
+
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                  {socials.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground underline-offset-8 transition-colors hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      data-testid={`link-welcome-${social.label.toLowerCase()}`}
+                    >
+                      {social.label} <span aria-hidden="true">↗</span>
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.dl
+                variants={item}
+                className="mt-10 grid max-w-xl grid-cols-2 gap-x-8 gap-y-5 border-t border-foreground/10 pt-6 sm:grid-cols-4"
+              >
+                {portfolio.stats.map((stat) => (
+                  <div key={stat.label}>
+                    <dt className="sr-only">{stat.label}</dt>
+                    <dd className="font-display text-lg font-semibold tracking-tight text-foreground">
+                      {stat.value}
+                    </dd>
+                    <dd className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      {stat.label}
+                    </dd>
+                  </div>
+                ))}
+              </motion.dl>
+            </motion.div>
+
+            {/* At-a-glance card: what's inside the portfolio */}
+            <motion.aside
+              className="rounded-3xl border border-foreground/12 bg-background/70 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl md:p-8"
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: reduced ? 0.3 : 0.7, duration: 0.85, ease: easings.out }}
             >
-              Continue →
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={onEnter}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: reduced ? 1 : 2.4, duration: 0.6 }}
-              className="sr-only"
-            >
-              Skip to portfolio
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
+                Inside this portfolio
+              </p>
+              <ul className="mt-5 space-y-1">
+                {chapters.map((chapter, index) => (
+                  <li key={chapter.href}>
+                    <button
+                      type="button"
+                      onClick={onEnter}
+                      className="group flex w-full items-center justify-between gap-4 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      data-testid={`button-welcome-chapter-${chapter.label.toLowerCase().replaceAll(' ', '-')}`}
+                    >
+                      <span className="flex items-baseline gap-3">
+                        <span className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="font-display text-base font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                          {chapter.label}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="font-mono text-xs text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-primary"
+                      >
+                        →
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="hairline my-5" />
+
+              <div className="space-y-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="flex items-center justify-between gap-3">
+                  <span>Based in</span>
+                  <span className="text-foreground">{portfolio.location}</span>
+                </p>
+                <p className="flex items-center justify-between gap-3">
+                  <span>Focus</span>
+                  <span className="text-foreground">Full-stack · Cloud · AI</span>
+                </p>
+                <p className="flex items-center justify-between gap-3">
+                  <span>Open to</span>
+                  <span className="text-primary">Internships &amp; collabs</span>
+                </p>
+              </div>
+            </motion.aside>
+          </div>
+        </main>
+
+        {/* Footer meta */}
+        <motion.footer
+          className="section-shell flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 py-5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: reduced ? 0.6 : 1.4, duration: durations.base }}
+        >
+          <span>
+            {portfolio.email} <span className="text-secondary">|</span> {portfolio.location}
+          </span>
+          <span className="hidden sm:inline">Press Enter to enter the portfolio</span>
+          <span>© 2026 {portfolio.name}</span>
+        </motion.footer>
+      </div>
+
+      {/* Accessibility fallback for keyboard users */}
+      <button type="button" onClick={onEnter} className="sr-only">
+        Skip to portfolio
+      </button>
     </motion.div>
   );
 }
