@@ -1,14 +1,17 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useForm, ValidationError } from '@formspree/react';
 
 import { durations, easings } from '@/motion/tokens';
 import { portfolio } from '@/data/portfolio';
-import { resumePath } from '@/lib/site';
+import { formspreeId, resumePath } from '@/lib/site';
 import { SectionReveal } from '@/components/animations';
 import ContactNetwork from '@/components/ContactNetwork';
 import { MagneticButton } from '@/components/animations/MagneticButton';
 
 type FormState = 'idle' | 'typing' | 'validation' | 'submitting' | 'success' | 'error';
+
+type ContactFields = { name: string; email: string; message: string };
 
 type Props = { resumeAvailable: boolean };
 
@@ -26,6 +29,24 @@ export default function ContactSection({ resumeAvailable }: Props) {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [state, setState] = useState<FormState>('idle');
   const [error, setError] = useState('');
+  const [formspree, submitToFormspree, resetFormspree] = useForm<ContactFields>(formspreeId);
+
+  // Mirror the Formspree submission lifecycle onto the section's own UI states.
+  useEffect(() => {
+    if (formspree.succeeded) {
+      setState('success');
+      return;
+    }
+    if (formspree.errors) {
+      setState('error');
+      const first = formspree.errors.getFormErrors()[0];
+      setError(
+        first
+          ? `${first.message} If that keeps happening, email ${portfolio.email} directly — I'll still get it.`
+          : `Something went wrong sending your message. Please email ${portfolio.email} directly — I'll still get it.`,
+      );
+    }
+  }, [formspree]);
 
   const updateField = (key: keyof typeof form, value: string) => {
     setForm((previous) => ({ ...previous, [key]: value }));
@@ -34,27 +55,36 @@ export default function ContactSection({ resumeAvailable }: Props) {
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!form.name.trim() || !isValidEmail || form.message.trim().length < 12) {
       setState('validation');
       setError('Please add your name, a valid email, and a little more context (12 characters minimum).');
       return;
     }
+    // Honeypot: humans never see this field, bots fill it — silently drop.
+    const honeypot = event.currentTarget.elements.namedItem('_gotcha');
+    if (honeypot instanceof HTMLInputElement && honeypot.value) {
+      setState('success');
+      return;
+    }
     setError('');
     setState('submitting');
-    const subject = encodeURIComponent(`Portfolio enquiry from ${form.name.trim()}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name.trim()}\nEmail: ${form.email.trim()}\n\n${form.message.trim()}`,
-    );
-    window.location.assign(`mailto:${portfolio.email}?subject=${subject}&body=${body}`);
-    setState('success');
+    try {
+      await submitToFormspree(event);
+    } catch {
+      setState('error');
+      setError(
+        `Something went wrong sending your message. Please email ${portfolio.email} directly — I'll still get it.`,
+      );
+    }
   };
 
   const reset = () => {
     setForm({ name: '', email: '', message: '' });
     setState('idle');
     setError('');
+    resetFormspree();
   };
 
   const fieldClass =
@@ -131,7 +161,7 @@ export default function ContactSection({ resumeAvailable }: Props) {
                   >
                     <p className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground">Message received.</p>
                     <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
-                      Your email app is ready with the message. Send it there and I&apos;ll get back to you soon.
+                      Thanks for reaching out — I&apos;ll get back to you soon.
                     </p>
                     <button
                       onClick={reset}
@@ -186,6 +216,11 @@ export default function ContactSection({ resumeAvailable }: Props) {
                           whileFocus={reduced ? undefined : { scale: 1.01 }}
                           data-testid="input-contact-email"
                         />
+                        <ValidationError
+                          field="email"
+                          errors={formspree.errors}
+                          className="mt-2 block font-mono text-[10px] leading-4 text-red-300"
+                        />
                       </label>
                     </div>
 
@@ -204,7 +239,23 @@ export default function ContactSection({ resumeAvailable }: Props) {
                         whileFocus={reduced ? undefined : { scale: 1.005 }}
                         data-testid="input-contact-message"
                       />
+                      <ValidationError
+                        field="message"
+                        errors={formspree.errors}
+                        className="mt-2 block font-mono text-[10px] leading-4 text-red-300"
+                      />
                     </label>
+
+                    {/* Honeypot (Formspree's _gotcha) — invisible to humans, bots fill it and get dropped */}
+                    <input
+                      type="text"
+                      name="_gotcha"
+                      id="contact-gotcha"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="absolute -left-[9999px] h-px w-px opacity-0"
+                    />
 
                     <AnimatePresence>
                       {(state === 'validation' || state === 'error') && error && (
