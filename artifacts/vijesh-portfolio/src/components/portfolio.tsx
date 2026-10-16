@@ -128,7 +128,7 @@ export function Hero({ resumeAvailable }: { resumeAvailable: boolean }) {
         <div className="grid items-end gap-14 lg:grid-cols-[1.08fr_.92fr]">
           <div>
             <div className="reveal inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary">
-              <span className="status-dot size-1.5 rounded-full bg-primary" /> available for thoughtful work
+              <span className="status-dot size-1.5 rounded-full bg-primary" /> open to internships
             </div>
             <p className="reveal reveal-delay-1 mt-7 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">{portfolio.eyebrow}</p>
             <h1 className="reveal reveal-delay-2 mt-4 max-w-4xl font-display text-[clamp(3.5rem,9vw,8.4rem)] font-semibold leading-[.88] tracking-[-0.09em]">

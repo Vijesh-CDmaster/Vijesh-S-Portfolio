@@ -72,7 +72,7 @@ export default function BlackHoleIntro({ onEnter }: { onEnter: () => void }) {
           </div>
           <span className="hidden items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary sm:inline-flex">
             <span aria-hidden="true" className="status-dot size-1.5 rounded-full bg-primary" />
-            Available for thoughtful work
+            Open to internships
           </span>
         </motion.header>
 

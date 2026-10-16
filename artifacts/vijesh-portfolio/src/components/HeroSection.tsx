@@ -38,7 +38,7 @@ export default function HeroSection({ resumeAvailable }: Props) {
               variants={line}
               className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-primary"
             >
-              <span className="status-dot size-1.5 rounded-full bg-primary" /> available for thoughtful work
+              <span className="status-dot size-1.5 rounded-full bg-primary" /> open to internships
             </motion.div>
 
             <motion.h1 className="mt-8 font-display font-semibold leading-[0.9] tracking-[-0.06em]">

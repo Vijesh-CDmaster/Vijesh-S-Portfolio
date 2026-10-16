@@ -69,7 +69,8 @@ export default function ContactSection({ resumeAvailable }: Props) {
             {portfolio.contactHeadline}
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-            For roles, collaborations, or a thoughtful exchange about building things — send a note. I read every message.
+            For roles, collaborations, or a thoughtful exchange about building things — send a note. I read every message.{' '}
+            <span className="text-foreground">{portfolio.availability}</span>
           </p>
         </SectionReveal>
 

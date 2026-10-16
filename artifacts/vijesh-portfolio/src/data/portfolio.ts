@@ -27,7 +27,7 @@ export const portfolio = {
     'I build full-stack applications, AI-powered systems, and cloud-ready solutions focused on solving practical problems.',
   about:
     'I’m Vijesh S, a B.Tech Artificial Intelligence & Data Science student at KGiSL Institute of Technology, focused on software engineering, full-stack development, cloud, DevOps, and applied AI. I enjoy turning real-world problems into working software—from AI-powered waste segregation and intelligent developer platforms to data-driven systems. Through projects, hackathons, internships, and team-based development, I have worked across frontend, backend, databases, APIs, machine learning, and deployment workflows.',
-  location: 'India',
+  location: 'Tamil Nadu, India · Open to remote',
   email: 'viju7122006@gmail.com',
   phone: '9384596466',
   github: 'https://github.com/Vijesh-CDmaster',
@@ -38,6 +38,8 @@ export const portfolio = {
   /** GitHub username used for the public repositories API (no tokens). */
   githubUser: 'Vijesh-CDmaster',
   contactHeadline: "LET'S BUILD SOMETHING USEFUL.",
+  /** Open-to-work signal — the first thing recruiters filter on. */
+  availability: 'Open to internships — remote or anywhere in Tamil Nadu.',
   stats: [
     { value: '2028', label: 'Expected graduation' },
     { value: '7.83', label: 'Current CGPA' },
@@ -52,10 +54,10 @@ export const portfolio = {
   },
   experience: {
     organization: 'Sangam Soft Solutions',
-    role: 'Software / AI Intern',
+    role: 'Data Science Intern',
     period: '09 June 2026 – 25 June 2026',
     project: 'Silent Dropout Prediction',
-    note: 'Patent dropout detection — not student dropout prediction.',
+    note: 'Patient dropout prediction — not student dropout prediction.',
   },
   openSource: [
     { name: 'CNCF Automation', organization: 'CNCF ecosystem', role: 'Contributor', url: 'https://www.cncf.io/' },
@@ -139,13 +141,15 @@ export const portfolio = {
       kicker: 'Data science / human-centered AI',
       category: 'AI / ML',
       categories: ['AI / ML'],
-      summary: 'Internship project for identifying early signals of silent dropout.',
+      summary: 'Internship project: predicting patient dropout from treatment data.',
       detail:
-        'Silent Dropout Prediction was developed during an internship at Sangam Soft Solutions. The project is about patent dropout detection — not student dropout prediction. This portfolio intentionally describes the project without inventing algorithms, accuracy values, datasets, or business results that have not been verified.',
+        'Silent Dropout Prediction was built during a 15-day data science internship at Sangam Soft Solutions. The work covered cleaning and exploring patient records, training and evaluating predictive models for dropout risk, and packaging the findings into a summary dashboard — with the goal of flagging patients disengaging from treatment early enough for a care team to act.',
       status: 'Private Repository',
-      tags: ['Internship', 'Data science', 'Prediction'],
+      tags: ['Internship', 'Data science', 'EDA', 'Predictive modeling', 'Dashboard'],
       accent: 'gold',
-      contribution: 'Internship project. Detailed responsibilities and results remain configurable until verified.',
+      contribution:
+        'Worked the full pipeline: data cleaning and exploratory analysis, model training and evaluation, and a final dashboard presenting the dropout-risk findings.',
+      result: 'Completed a 15-day Data Science internship (June 2026).',
     },
   ] satisfies Project[],
   skills: [
@@ -158,10 +162,10 @@ export const portfolio = {
     { label: 'Tools', items: ['Git', 'GitHub', 'REST APIs', 'JWT'] },
   ],
   achievements: [
+    '2nd Prize — 11:11 Hackathon (Yuvaasoft), 3-member team.',
     'Participated in 5+ contest-based hiring hackathons.',
-    'Building a portfolio across full-stack engineering, cloud and DevOps, and applied AI.',
-    'Translating academic work into projects with a clear user and a practical outcome.',
-    'Keeping engineering decisions legible: from interface details to system boundaries.',
+    '15-day Data Science internship at Sangam Soft Solutions — patient dropout prediction.',
+    'CNCF & Meshery open-source contributor.',
   ],
 };
 
