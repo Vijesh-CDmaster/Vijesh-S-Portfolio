@@ -27,7 +27,7 @@ const milestones = [
     period: 'Continuous',
     label: 'building',
     title: 'Hackathons & open source',
-    meta: `${portfolio.hackathons.length} events and project milestones · CNCF & Meshery contributions`,
+    meta: `${portfolio.hackathons.length} events and project milestones · 5+ contest-based hiring hackathons · CNCF & Meshery contributions`,
     note: 'Turning academic work into projects with a clear user and a practical outcome.',
   },
 ] as const;

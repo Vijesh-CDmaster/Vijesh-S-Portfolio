@@ -6,11 +6,11 @@ import { portfolio } from '@/data/portfolio';
 import { SectionReveal, StaggerContainer, StaggerItem } from '@/components/animations';
 
 const nodes = [
-  { id: 'fullstack', label: 'FULL-STACK', x: '15%', y: '16%', description: 'React, Node, APIs, databases — end-to-end product delivery.' },
-  { id: 'ai', label: 'AI', x: '70%', y: '10%', description: 'Machine learning, computer vision, AI APIs, applied intelligence.' },
-  { id: 'cloud', label: 'CLOUD', x: '18%', y: '66%', description: 'AWS, deployment workflows, cloud-ready architecture.' },
-  { id: 'devops', label: 'DEVOPS', x: '66%', y: '58%', description: 'Docker, Terraform, GitHub Actions, Linux, CI/CD.' },
-  { id: 'system', label: 'SYSTEM DESIGN', x: '40%', y: '38%', description: 'Sensible boundaries, resilient delivery, legible decisions.' },
+  { id: 'fullstack', label: 'FULL-STACK', x: '18%', y: '24%', description: 'React, Node, APIs, databases — end-to-end product delivery.' },
+  { id: 'ai', label: 'AI', x: '78%', y: '22%', description: 'Machine learning, computer vision, AI APIs, applied intelligence.' },
+  { id: 'cloud', label: 'CLOUD', x: '22%', y: '68%', description: 'AWS, deployment workflows, cloud-ready architecture.' },
+  { id: 'devops', label: 'DEVOPS', x: '82%', y: '66%', description: 'Docker, Terraform, GitHub Actions, Linux, CI/CD.' },
+  { id: 'system', label: 'SYSTEM DESIGN', x: '36%', y: '36%', description: 'Sensible boundaries, resilient delivery, legible decisions.' },
 ];
 
 /** Compact proof strip — factual only, straight from project data. */
@@ -91,7 +91,7 @@ export default function AboutSection() {
                     <motion.line
                       key={`line-${node.id}`}
                       x1="50%"
-                      y1="50%"
+                      y1="46%"
                       x2={node.x}
                       y2={node.y}
                       stroke={active === node.id ? 'rgba(110,231,183,0.85)' : 'rgba(255,255,255,0.14)'}
@@ -102,7 +102,7 @@ export default function AboutSection() {
                       transition={{ duration: durations.base, ease: easings.out }}
                     />
                   ))}
-                  <circle cx="50%" cy="50%" r="4" fill="rgba(244,182,74,0.9)" />
+                  <circle cx="50%" cy="46%" r="4" fill="rgba(244,182,74,0.9)" />
                 </svg>
 
                 {nodes.map((node) => (

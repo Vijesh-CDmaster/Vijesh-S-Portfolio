@@ -7,7 +7,7 @@ import { SectionReveal, StaggerContainer, StaggerItem } from '@/components/anima
 const highlight = portfolio.projects.find((project) => project.id === 'ecosort');
 
 /** Act 5 — hackathons & achievements: horizontal snap timeline on desktop,
- *  vertical stack on mobile, with the verified Vihansa result highlighted. */
+ *  vertical stack on mobile, with the verified 11:11 Hackathon result highlighted. */
 export default function AchievementsSection() {
   const reduced = useReducedMotion();
 
@@ -41,6 +41,11 @@ export default function AchievementsSection() {
               <p className="relative mt-4 font-display text-3xl font-semibold tracking-[-0.04em] text-foreground md:text-4xl">
                 {highlight.result}
               </p>
+              {highlight.resultNote && (
+                <p className="relative mt-2 font-mono text-[11px] uppercase leading-5 tracking-[0.14em] text-secondary/90">
+                  {highlight.resultNote}
+                </p>
+              )}
               <p className="relative mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
                 {highlight.title} — {highlight.summary}
               </p>
@@ -50,7 +55,6 @@ export default function AchievementsSection() {
 
         {/* Timeline */}
         <div className="relative mt-12">
-          <div className="absolute left-0 right-0 top-6 hidden h-px bg-gradient-to-r from-primary/50 via-secondary/50 to-transparent md:block" />
           <StaggerContainer className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6 md:gap-6 md:overflow-x-auto [scrollbar-width:thin]" step={0.07}>
             {portfolio.hackathons.map((event, index) => (
               <StaggerItem
@@ -83,7 +87,7 @@ export default function AchievementsSection() {
         </div>
 
         {/* Standing achievements */}
-        <StaggerContainer className="mt-8 grid gap-4 md:grid-cols-3" step={0.09}>
+        <StaggerContainer className="mt-8 grid gap-4 md:grid-cols-2" step={0.09}>
           {portfolio.achievements.map((achievement) => (
             <StaggerItem key={achievement} className="rounded-2xl border border-foreground/10 bg-surface-sunken/60 p-5">
               <p className="text-sm leading-7 text-muted-foreground">{achievement}</p>

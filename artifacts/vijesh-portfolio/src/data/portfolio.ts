@@ -15,6 +15,7 @@ export type Project = {
   architecture?: string[];
   contribution?: string;
   result?: string;
+  resultNote?: string;
 };
 
 export const portfolio = {
@@ -40,7 +41,7 @@ export const portfolio = {
   stats: [
     { value: '2028', label: 'Expected graduation' },
     { value: '7.83', label: 'Current CGPA' },
-    { value: 'Multiple', label: 'Hackathon projects' },
+    { value: '5+', label: 'Contest-based hiring hackathons' },
     { value: 'Open source', label: 'Contributor' },
   ],
   education: {
@@ -60,7 +61,7 @@ export const portfolio = {
     { name: 'CNCF Automation', organization: 'CNCF ecosystem', role: 'Contributor', url: 'https://www.cncf.io/' },
     { name: 'Meshery', organization: 'Meshery', role: 'Contributor', url: 'https://meshery.io/' },
   ],
-  hackathons: ['Vihansa 2026', 'SRCAS 24-hour Hackathon', 'Hackspora', 'Smart India Hackathon', 'INNO HACK', 'AI in Healthcare', 'AURELION', 'PyExpo'],
+  hackathons: ['11:11 Hackathon — Yuvaasoft', 'SRCAS 24-hour Hackathon', 'Hackspora', 'Smart India Hackathon', 'INNO HACK', 'AI in Healthcare', 'AURELION', 'PyExpo'],
   projects: [
     {
       id: 'verya',
@@ -103,7 +104,8 @@ export const portfolio = {
       tags: ['Computer vision', 'IoT', 'Recycling', 'Analytics', 'Marketplace'],
       accent: 'coral',
       architecture: ['Waste Input', 'AI Detection', 'Primary Segregation', 'Magnetic Separation', 'Eddy Current Separation', 'Organic Processing', 'Recycling / Marketplace'],
-      result: 'Vihansa 2026 — 2nd Prize',
+      result: '11:11 Hackathon — 2nd Prize',
+      resultNote: 'Conducted by Yuvaasoft at Sri Ramakrishna College of Engineering and Technology',
     },
     {
       id: 'temple',
@@ -156,6 +158,7 @@ export const portfolio = {
     { label: 'Tools', items: ['Git', 'GitHub', 'REST APIs', 'JWT'] },
   ],
   achievements: [
+    'Participated in 5+ contest-based hiring hackathons.',
     'Building a portfolio across full-stack engineering, cloud and DevOps, and applied AI.',
     'Translating academic work into projects with a clear user and a practical outcome.',
     'Keeping engineering decisions legible: from interface details to system boundaries.',

@@ -32,7 +32,7 @@ export default function ProjectCaseStudy({ project, onClose }: Props) {
     { index: '03', title: 'Architecture', items: project.architecture },
     { index: '04', title: 'Technology', items: project.tags },
     { index: '05', title: 'Implementation', body: project.contribution },
-    { index: '06', title: 'Result', body: project.result },
+    { index: '06', title: 'Result', body: [project.result, project.resultNote].filter(Boolean).join('. ') },
     { index: '07', title: 'Links', body: project.github ? undefined : 'Private repository — access on request.' },
   ].filter((block) => block.body || (block.items && block.items.length > 0));
 
